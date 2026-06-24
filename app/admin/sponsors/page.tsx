@@ -5,6 +5,10 @@ import AdminShell from "@/components/admin/AdminShell";
 import EmptyCmsHint from "@/components/admin/EmptyCmsHint";
 import { ItemActions } from "@/components/admin/ItemActions";
 import {
+  SponsorLogoUpload,
+  resolveSponsorLogoUrl,
+} from "@/components/admin/SponsorLogoUpload";
+import {
   adminJson,
   useAdminResource,
 } from "@/components/admin/useAdminResource";
@@ -66,8 +70,10 @@ export default function AdminSponsorsPage() {
   const { items, loading, msg, setMsg, load } =
     useAdminResource<SponsorRow>("/api/admin/sponsors");
   const [form, setForm] = useState(emptyForm);
+  const [addLogoFile, setAddLogoFile] = useState<File | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState(emptyForm);
+  const [editLogoFile, setEditLogoFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [seeding, setSeeding] = useState(false);
 
@@ -82,6 +88,7 @@ export default function AdminSponsorsPage() {
 
   const startEdit = (s: SponsorRow) => {
     setEditingId(s.id);
+    setEditLogoFile(null);
     setEditForm({
       name: s.name,
       logoUrl: s.logo_url ?? "",
@@ -95,41 +102,64 @@ export default function AdminSponsorsPage() {
   const add = async (e: React.FormEvent) => {
     e.preventDefault();
     setMsg("");
-    const data = await adminJson("/api/admin/sponsors", "POST", {
-      name: form.name,
-      logoUrl: form.logoUrl || null,
-      logoText: form.logoText || form.name,
-      websiteUrl: form.websiteUrl || null,
-      tier: form.tier,
-      sortOrder: Number(form.sortOrder),
-    });
-    if (data.success) {
-      setForm(emptyForm);
-      setMsg("Sponsor added. Public site updated.");
-      load();
-    } else {
-      setMsg(data.message || "Failed.");
+    setSaving(true);
+    try {
+      const logoUrl = await resolveSponsorLogoUrl({
+        newFile: addLogoFile,
+        requireLogo: true,
+      });
+      const data = await adminJson("/api/admin/sponsors", "POST", {
+        name: form.name,
+        logoUrl,
+        logoText: form.logoText || form.name,
+        websiteUrl: form.websiteUrl || null,
+        tier: form.tier,
+        sortOrder: Number(form.sortOrder),
+      });
+      if (data.success) {
+        setForm(emptyForm);
+        setAddLogoFile(null);
+        setMsg("Sponsor added. Public site updated.");
+        load();
+      } else {
+        setMsg(data.message || "Failed.");
+      }
+    } catch (error) {
+      setMsg(error instanceof Error ? error.message : "Failed to add sponsor.");
+    } finally {
+      setSaving(false);
     }
   };
 
   const saveEdit = async () => {
     if (editingId == null) return;
     setSaving(true);
-    const data = await adminJson(`/api/admin/sponsors/${editingId}`, "PATCH", {
-      name: editForm.name,
-      logoUrl: editForm.logoUrl || null,
-      logoText: editForm.logoText || editForm.name,
-      websiteUrl: editForm.websiteUrl || null,
-      tier: editForm.tier,
-      sortOrder: Number(editForm.sortOrder),
-    });
-    setSaving(false);
-    if (data.success) {
-      setEditingId(null);
-      setMsg("Sponsor updated.");
-      load();
-    } else {
-      setMsg(data.message || "Failed.");
+    setMsg("");
+    try {
+      const logoUrl = await resolveSponsorLogoUrl({
+        existingUrl: editForm.logoUrl,
+        newFile: editLogoFile,
+      });
+      const data = await adminJson(`/api/admin/sponsors/${editingId}`, "PATCH", {
+        name: editForm.name,
+        logoUrl,
+        logoText: editForm.logoText || editForm.name,
+        websiteUrl: editForm.websiteUrl || null,
+        tier: editForm.tier,
+        sortOrder: Number(editForm.sortOrder),
+      });
+      if (data.success) {
+        setEditingId(null);
+        setEditLogoFile(null);
+        setMsg("Sponsor updated.");
+        load();
+      } else {
+        setMsg(data.message || "Failed.");
+      }
+    } catch (error) {
+      setMsg(error instanceof Error ? error.message : "Failed to update sponsor.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -159,21 +189,21 @@ export default function AdminSponsorsPage() {
               value={form.tier}
               onChange={(tier) => setForm({ ...form, tier })}
             />
-            <AdminInput
-              label="Logo image URL"
-              value={form.logoUrl}
-              onChange={(e) => setForm({ ...form, logoUrl: e.target.value })}
-              placeholder="https://..."
+            <SponsorLogoUpload
+              label="Logo image *"
+              onChange={setAddLogoFile}
             />
             <AdminInput
-              label="Logo text (if no image)"
+              label="Logo alt text (optional)"
               value={form.logoText}
               onChange={(e) => setForm({ ...form, logoText: e.target.value })}
+              placeholder="Shown if image fails to load"
             />
             <AdminInput
               label="Website URL"
               value={form.websiteUrl}
               onChange={(e) => setForm({ ...form, websiteUrl: e.target.value })}
+              placeholder="https://..."
             />
             <AdminInput
               label="Sort order"
@@ -181,7 +211,9 @@ export default function AdminSponsorsPage() {
               value={form.sortOrder}
               onChange={(e) => setForm({ ...form, sortOrder: e.target.value })}
             />
-            <AdminButton type="submit">Add sponsor</AdminButton>
+            <AdminButton type="submit" disabled={saving}>
+              {saving ? "Uploading…" : "Add sponsor"}
+            </AdminButton>
           </form>
         </AdminCard>
 
@@ -219,15 +251,13 @@ export default function AdminSponsorsPage() {
                           setEditForm({ ...editForm, tier })
                         }
                       />
-                      <AdminInput
-                        label="Logo URL"
-                        value={editForm.logoUrl}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, logoUrl: e.target.value })
-                        }
+                      <SponsorLogoUpload
+                        label="Logo image"
+                        currentUrl={editForm.logoUrl || undefined}
+                        onChange={setEditLogoFile}
                       />
                       <AdminInput
-                        label="Logo text"
+                        label="Logo alt text"
                         value={editForm.logoText}
                         onChange={(e) =>
                           setEditForm({ ...editForm, logoText: e.target.value })
@@ -256,20 +286,32 @@ export default function AdminSponsorsPage() {
                       />
                     </div>
                   ) : (
-                    <div className="mb-2 min-w-0">
-                      <p className="font-medium break-words">{s.name}</p>
-                      <p className="text-xs text-[#888]">
-                        {SPONSOR_TIER_LABELS[s.tier as SponsorTier] ||
-                          "Supporting Partner"}{" "}
-                        · {s.logo_url || s.logo_text || "No logo"} · order{" "}
-                        {s.sort_order}
-                      </p>
+                    <div className="mb-2 min-w-0 flex gap-3 items-start">
+                      {s.logo_url ? (
+                        <img
+                          src={s.logo_url}
+                          alt={s.logo_text || s.name}
+                          className="w-12 h-12 object-contain rounded bg-[#0a0a0a] border border-white/10 p-1 shrink-0"
+                        />
+                      ) : null}
+                      <div className="min-w-0">
+                        <p className="font-medium break-words">{s.name}</p>
+                        <p className="text-xs text-[#888]">
+                          {SPONSOR_TIER_LABELS[s.tier as SponsorTier] ||
+                            "Supporting Partner"}{" "}
+                          · {s.logo_url ? "Logo uploaded" : s.logo_text || "No logo"} · order{" "}
+                          {s.sort_order}
+                        </p>
+                      </div>
                     </div>
                   )}
                   <ItemActions
                     editing={editingId === s.id}
                     onEdit={() => startEdit(s)}
-                    onCancel={() => setEditingId(null)}
+                    onCancel={() => {
+                      setEditingId(null);
+                      setEditLogoFile(null);
+                    }}
                     onSave={saveEdit}
                     onDelete={() => remove(s.id)}
                     saving={saving}

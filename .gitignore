@@ -37,6 +37,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# uploaded sponsor logos (local dev)
+/public/uploads/sponsors/*
+!/public/uploads/sponsors/.gitkeep
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
