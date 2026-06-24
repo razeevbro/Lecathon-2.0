@@ -3,42 +3,22 @@ export const ORGANIZER_NAME =
 
 export const navLinks = [
   { label: "About", href: "#about" },
-  { label: "Themes", href: "#themes" },
+  { label: "Open Theme", href: "#themes" },
   { label: "Schedule", href: "#schedule" },
   { label: "Prizes", href: "#prizes" },
   { label: "FAQs", href: "#faqs" },
 ];
+
+export const OPEN_THEME_TITLE = "Open Theme";
+
 export const problemThemes = [
   {
     id: 1,
-    title: "Healthcare",
-    description: "Improve healthcare accessibility, diagnostics, and patient care through innovative technology.",
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400&q=80",
-  },
-  {
-    id: 2,
-    title: "Education and Tourism ",
-    description: "Transform learning experiences and make education more accessible and engaging.",
-    image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=400&q=80",
-  },
-  // {
-  //   id: 3,
-  //   title: "Tourism",
-  //   description: "Enhance travel experiences, tourism services, and destination discovery.",
-  //   image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&q=80",
-  // },
-  {
-    id: 4,
-    title: "FOOD and Safety",
+    title: OPEN_THEME_TITLE,
     description:
-      "Improve food safety, traceability, nutrition, and sustainable food systems through technology.",
-    image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80",
-  },
-  {
-    id: 5,
-    title: "FinTech",
-    description: "Build innovative solutions for payments, banking, financial literacy, and inclusion.",
-    image: "https://images.unsplash.com/photo-1559526324-593bc073d938?w=400&q=80",
+      "Build anything you're passionate about. No sector limits — bring your best ideas and create solutions across any domain.",
+    image:
+      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80",
   },
 ];
 
@@ -53,10 +33,7 @@ export const partners = [
   { name: "Phantom", logo: "Partner" },
 ];
 
-export const registrationThemes = [
-  ...problemThemes.map((t) => t.title),
-  "Other",
-];
+export const registrationThemes = [OPEN_THEME_TITLE];
 
 export const lecaWeekSchedule = [
   {
@@ -78,7 +55,7 @@ export const lecaWeekSchedule = [
   {
     time: "14:00 - 16:00",
     phase: "Workshop Session 2",
-    description: "Deep dive into problem themes and ideation exercises",
+    description: "Open ideation workshop and brainstorming exercises",
   },
   {
     time: "16:00 - 17:00",
@@ -101,7 +78,7 @@ export const hackathonSchedule = [
   {
     time: "10:00 - 10:30",
     phase: "Problem Statement Release",
-    description: "Official problem statements revealed across all themes",
+    description: "Hackathon kickoff and open theme briefing",
   },
   {
     time: "10:30 - 22:00",
@@ -154,7 +131,7 @@ export const faqs = [
   {
     question: "Can I start working on my project before the hackathon?",
     answer:
-      "The actual project development must begin at the hackathon. However, you're encouraged to research problem themes, brainstorm ideas, and prepare your development environment in advance.",
+      "The actual project development must begin at the hackathon. However, you're encouraged to research your idea, brainstorm solutions, and prepare your development environment in advance.",
   },
   {
     question: "How will projects be judged?",

@@ -164,10 +164,7 @@ export async function getSiteContent(): Promise<SiteContent> {
           ? hackathonSchedule
           : defaults.hackathonSchedule,
       settings,
-      registrationThemes: [
-        ...themesForRegistration.map((t) => t.title),
-        "Other",
-      ],
+      registrationThemes: themesForRegistration.map((t) => t.title),
       registration: {
         ...isRegistrationOpenBySettings(settings, teamCount),
         teamCount,

@@ -114,7 +114,7 @@ export default function Hero({
                   className="flex items-center gap-2 px-7 py-3 bg-[#1E1E1E] text-white font-semibold rounded-full text-sm border border-white/10 hover:border-white/30 transition-all"
                 >
                   <FileText size={16} className="text-[#A3A3A3]" />
-                  View Problem Themes
+                  View Open Theme
                 </motion.a>
               </div>
 

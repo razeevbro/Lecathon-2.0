@@ -35,7 +35,7 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
             <h4 className="text-white font-semibold text-sm">Quick Links</h4>
             {[
               { label: "About", href: "#about" },
-              { label: "Themes", href: "#themes" },
+              { label: "Open Theme", href: "#themes" },
               { label: "Schedule", href: "#schedule" },
               { label: "Prizes", href: "#prizes" },
               { label: "FAQs", href: "#faqs" },

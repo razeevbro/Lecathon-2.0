@@ -71,10 +71,7 @@ export function getDefaultSiteContent(): SiteContent {
       sortOrder: i,
     })),
     settings: defaultSettings,
-    registrationThemes: [
-      ...problemThemes.map((t) => t.title.trim()),
-      "Other",
-    ],
+    registrationThemes: problemThemes.map((t) => t.title.trim()),
     registration: {
       open: true,
       teamCount: 0,

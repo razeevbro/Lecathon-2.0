@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle, Loader2 } from "lucide-react";
+import { OPEN_THEME_TITLE } from "@/app/constants";
 import type { RegistrationAvailability } from "@/lib/types/site";
 
 interface Props {
@@ -26,7 +27,7 @@ export default function RegistrationModal({
     phone: "",
     teamName: "",
     college: "",
-    theme: "",
+    theme: OPEN_THEME_TITLE,
     videoUrl: "",
     teamSize: 1,
     members: [{ ...emptyMember }],
@@ -73,7 +74,7 @@ export default function RegistrationModal({
         phone: "",
         teamName: "",
         college: "",
-        theme: "",
+        theme: OPEN_THEME_TITLE,
         videoUrl: "",
         teamSize: 1,
         members: [{ ...emptyMember }],
@@ -275,22 +276,11 @@ export default function RegistrationModal({
 
                   <div>
                     <label className="text-xs text-[#A3A3A3] mb-1 block">
-                      Preferred Theme
+                      Theme
                     </label>
-                    <select
-                      value={form.theme}
-                      onChange={(e) =>
-                        setForm({ ...form, theme: e.target.value })
-                      }
-                      className="w-full bg-[#111] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-yellow-400/50 transition-colors"
-                    >
-                      <option value="">Select a theme</option>
-                      {registrationThemes.map((theme) => (
-                        <option key={theme} value={theme}>
-                          {theme}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="w-full bg-[#111] border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
+                      {registrationThemes[0] ?? OPEN_THEME_TITLE}
+                    </div>
                   </div>
 
                   <div>
