@@ -10,32 +10,37 @@ import type { Sponsor } from "@/lib/types/site";
 
 const TIER_LAYOUT: Record<
   SponsorTier,
-  { grid: string; card: string; logo: string }
+  { grid: string; card: string; logo: string; text: string }
 > = {
   title: {
-    grid: "grid-cols-1 max-w-sm mx-auto",
-    card: "min-h-[120px] p-6 border-yellow-400/30 bg-[#1a1a1a]",
-    logo: "max-h-14",
+    grid: "flex flex-wrap justify-center items-center gap-4",
+    card: "p-4 sm:p-5 border-yellow-400/30",
+    logo: "h-auto w-auto max-h-32 sm:max-h-40 max-w-[min(100vw-3rem,360px)]",
+    text: "text-lg sm:text-xl",
   },
   platinum: {
-    grid: "grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto",
-    card: "min-h-[104px] p-5 border-white/15",
-    logo: "max-h-12",
+    grid: "flex flex-wrap justify-center items-center gap-3 sm:gap-4 max-w-4xl mx-auto",
+    card: "p-3 sm:p-4 border-white/15",
+    logo: "h-auto w-auto max-h-24 sm:max-h-28 max-w-[min(100vw-3rem,280px)]",
+    text: "text-base",
   },
   gold: {
-    grid: "grid-cols-2 sm:grid-cols-3 max-w-3xl mx-auto",
-    card: "min-h-[96px] p-5",
-    logo: "max-h-10",
+    grid: "flex flex-wrap justify-center items-center gap-3 sm:gap-4 max-w-5xl mx-auto",
+    card: "p-3 sm:p-4",
+    logo: "h-auto w-auto max-h-20 sm:max-h-24 max-w-[min(100vw-3rem,220px)]",
+    text: "text-sm",
   },
   silver: {
-    grid: "grid-cols-2 sm:grid-cols-4 max-w-4xl mx-auto",
-    card: "min-h-[88px] p-5",
-    logo: "max-h-10",
+    grid: "flex flex-wrap justify-center items-center gap-3 sm:gap-4 max-w-5xl mx-auto",
+    card: "p-3",
+    logo: "h-auto w-auto max-h-16 sm:max-h-20 max-w-[min(100vw-3rem,180px)]",
+    text: "text-sm",
   },
   supporting_partner: {
-    grid: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 max-w-5xl mx-auto",
-    card: "min-h-[80px] p-4",
-    logo: "max-h-8",
+    grid: "flex flex-wrap justify-center items-center gap-3 sm:gap-4 max-w-6xl mx-auto",
+    card: "p-2.5 sm:p-3",
+    logo: "h-auto w-auto max-h-14 sm:max-h-16 max-w-[min(100vw-3rem,150px)]",
+    text: "text-xs sm:text-sm",
   },
 };
 
@@ -53,15 +58,17 @@ function SponsorCard({
     <img
       src={partner.logoUrl}
       alt={partner.name}
-      className={`${layout.logo} max-w-full object-contain opacity-70 group-hover:opacity-100 transition-opacity`}
+      className={`${layout.logo} object-contain opacity-90 group-hover:opacity-100 transition-opacity`}
     />
   ) : (
-    <span className="text-white/50 font-bold text-sm tracking-wide group-hover:text-white/80 transition-colors text-center">
+    <span
+      className={`text-white/50 font-bold tracking-wide group-hover:text-white/80 transition-colors text-center px-2 ${layout.text}`}
+    >
       {partner.logoText || partner.name}
     </span>
   );
 
-  const className = `flex items-center justify-center bg-[#1a1a1a] border border-white/8 rounded-xl hover:border-white/20 transition-all duration-300 group ${layout.card}`;
+  const className = `inline-flex items-center justify-center w-fit h-fit bg-[#1a1a1a] border border-white/8 rounded-xl hover:border-white/20 transition-all duration-300 group ${layout.card}`;
 
   if (partner.websiteUrl) {
     return (
@@ -124,9 +131,7 @@ export default function Partners({ sponsors }: { sponsors: Sponsor[] }) {
               <p className="text-center text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-[#888] mb-5">
                 {section.label}
               </p>
-              <div
-                className={`grid gap-3 sm:gap-4 ${TIER_LAYOUT[section.tier].grid}`}
-              >
+              <div className={TIER_LAYOUT[section.tier].grid}>
                 {section.items.map((partner, i) => (
                   <SponsorCard
                     key={partner.id}
