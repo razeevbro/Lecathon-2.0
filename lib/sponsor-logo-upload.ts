@@ -44,6 +44,14 @@ export function validateSponsorLogoFile(
   return { ok: true };
 }
 
+function canUseVercelBlob(): boolean {
+  return !!(
+    process.env.BLOB_READ_WRITE_TOKEN ||
+    process.env.BLOB_STORE_ID ||
+    process.env.VERCEL
+  );
+}
+
 export async function saveSponsorLogo(file: File): Promise<string> {
   const validation = validateSponsorLogoFile(file);
   if (!validation.ok) {
@@ -54,12 +62,21 @@ export async function saveSponsorLogo(file: File): Promise<string> {
   const base = sanitizeFilename(file.name.replace(/\.[^.]+$/, "")) || "sponsor";
   const filename = `${Date.now()}-${base}.${ext}`;
 
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    const blob = await put(`sponsors/${filename}`, file, {
-      access: "public",
-      addRandomSuffix: false,
-    });
-    return blob.url;
+  if (canUseVercelBlob()) {
+    try {
+      const blob = await put(`sponsors/${filename}`, file, {
+        access: "public",
+        addRandomSuffix: false,
+      });
+      return blob.url;
+    } catch (error) {
+      if (process.env.VERCEL) {
+        throw new Error(
+          "Logo upload failed. In Vercel: Storage → your Blob store → Projects → ensure this app is connected, then redeploy."
+        );
+      }
+      throw error instanceof Error ? error : new Error("Blob upload failed.");
+    }
   }
 
   const uploadsDir = path.join(process.cwd(), "public", "uploads", "sponsors");
