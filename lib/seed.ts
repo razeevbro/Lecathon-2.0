@@ -13,12 +13,13 @@ export async function seedDatabase(): Promise<{ message: string }> {
 
   for (const sponsor of content.sponsors) {
     await sql`
-      INSERT INTO sponsors (name, logo_url, logo_text, website_url, sort_order)
+      INSERT INTO sponsors (name, logo_url, logo_text, website_url, tier, sort_order)
       VALUES (
         ${sponsor.name},
         ${sponsor.logoUrl},
         ${sponsor.logoText},
         ${sponsor.websiteUrl},
+        ${sponsor.tier},
         ${sponsor.sortOrder}
       )
     `;

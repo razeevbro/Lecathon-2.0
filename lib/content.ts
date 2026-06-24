@@ -6,6 +6,7 @@ import {
   parseSiteSettings,
   siteSettingsToDbEntries,
 } from "@/lib/site-settings";
+import { normalizeSponsorTier, sponsorTierSortIndex } from "@/lib/sponsor-tiers";
 import type {
   Faq,
   ProblemTheme,
@@ -21,6 +22,7 @@ type SponsorRow = {
   logo_url: string | null;
   logo_text: string | null;
   website_url: string | null;
+  tier?: string | null;
   sort_order: number;
 };
 
@@ -55,8 +57,20 @@ function mapSponsor(row: SponsorRow): Sponsor {
     logoUrl: row.logo_url,
     logoText: row.logo_text,
     websiteUrl: row.website_url,
+    tier: normalizeSponsorTier(row.tier),
     sortOrder: row.sort_order,
   };
+}
+
+function sortSponsors(sponsors: Sponsor[]): Sponsor[] {
+  return [...sponsors].sort((a, b) => {
+    const tierDiff =
+      sponsorTierSortIndex(a.tier) - sponsorTierSortIndex(b.tier);
+    if (tierDiff !== 0) {
+      return tierDiff;
+    }
+    return a.sortOrder - b.sortOrder;
+  });
 }
 
 function mapTheme(row: ThemeRow): ProblemTheme {
@@ -122,7 +136,7 @@ export async function getSiteContent(): Promise<SiteContent> {
         countRegistrations(),
       ]);
 
-    const sponsors = (sponsorRows as SponsorRow[]).map(mapSponsor);
+    const sponsors = sortSponsors((sponsorRows as SponsorRow[]).map(mapSponsor));
     const problemThemes = (themeRows as ThemeRow[]).map(mapTheme);
     const faqs = (faqRows as FaqRow[]).map(mapFaq);
     const schedules = (scheduleRows as ScheduleRow[]).map(mapSchedule);

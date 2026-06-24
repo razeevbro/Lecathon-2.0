@@ -38,6 +38,7 @@ export function getDefaultSiteContent(): SiteContent {
       logoUrl: null,
       logoText: p.logo.trim() || p.name,
       websiteUrl: null,
+      tier: "supporting_partner" as const,
       sortOrder: i,
     })),
     problemThemes: problemThemes.map((t, i) => ({

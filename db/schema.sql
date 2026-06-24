@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS sponsors (
   logo_url TEXT,
   logo_text TEXT,
   website_url TEXT,
+  tier TEXT NOT NULL DEFAULT 'supporting_partner'
+    CHECK (tier IN ('title', 'platinum', 'gold', 'silver', 'supporting_partner')),
   sort_order INTEGER NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

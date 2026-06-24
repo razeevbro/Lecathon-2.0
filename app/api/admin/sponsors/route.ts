@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePublicSite } from "@/lib/revalidate-site";
+import { normalizeSponsorTier } from "@/lib/sponsor-tiers";
 import { requireSql } from "@/lib/sql";
 
 export const dynamic = "force-dynamic";
@@ -34,13 +35,15 @@ export async function POST(req: NextRequest) {
     }
 
     const sql = requireSql();
+    const tier = normalizeSponsorTier(body.tier);
     const rows = await sql`
-      INSERT INTO sponsors (name, logo_url, logo_text, website_url, sort_order)
+      INSERT INTO sponsors (name, logo_url, logo_text, website_url, tier, sort_order)
       VALUES (
         ${name},
         ${body.logoUrl?.trim() || null},
         ${body.logoText?.trim() || name},
         ${body.websiteUrl?.trim() || null},
+        ${tier},
         ${Number(body.sortOrder) || 0}
       )
       RETURNING *

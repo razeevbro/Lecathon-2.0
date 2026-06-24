@@ -12,7 +12,13 @@ import {
   AdminButton,
   AdminCard,
   AdminInput,
+  AdminSelect,
 } from "@/components/admin/admin-ui";
+import {
+  SPONSOR_TIERS,
+  SPONSOR_TIER_LABELS,
+  type SponsorTier,
+} from "@/lib/sponsor-tiers";
 
 type SponsorRow = {
   id: number;
@@ -20,6 +26,7 @@ type SponsorRow = {
   logo_url: string | null;
   logo_text: string | null;
   website_url: string | null;
+  tier: string;
   sort_order: number;
 };
 
@@ -28,8 +35,32 @@ const emptyForm = {
   logoUrl: "",
   logoText: "",
   websiteUrl: "",
+  tier: "supporting_partner" as SponsorTier,
   sortOrder: "0",
 };
+
+function TierSelect({
+  value,
+  onChange,
+}: {
+  value: SponsorTier;
+  onChange: (tier: SponsorTier) => void;
+}) {
+  return (
+    <AdminSelect
+      label="Sponsor tier *"
+      value={value}
+      onChange={(e) => onChange(e.target.value as SponsorTier)}
+      required
+    >
+      {SPONSOR_TIERS.map((tier) => (
+        <option key={tier} value={tier}>
+          {SPONSOR_TIER_LABELS[tier]}
+        </option>
+      ))}
+    </AdminSelect>
+  );
+}
 
 export default function AdminSponsorsPage() {
   const { items, loading, msg, setMsg, load } =
@@ -56,6 +87,7 @@ export default function AdminSponsorsPage() {
       logoUrl: s.logo_url ?? "",
       logoText: s.logo_text ?? "",
       websiteUrl: s.website_url ?? "",
+      tier: (s.tier as SponsorTier) || "supporting_partner",
       sortOrder: String(s.sort_order),
     });
   };
@@ -68,6 +100,7 @@ export default function AdminSponsorsPage() {
       logoUrl: form.logoUrl || null,
       logoText: form.logoText || form.name,
       websiteUrl: form.websiteUrl || null,
+      tier: form.tier,
       sortOrder: Number(form.sortOrder),
     });
     if (data.success) {
@@ -87,6 +120,7 @@ export default function AdminSponsorsPage() {
       logoUrl: editForm.logoUrl || null,
       logoText: editForm.logoText || editForm.name,
       websiteUrl: editForm.websiteUrl || null,
+      tier: editForm.tier,
       sortOrder: Number(editForm.sortOrder),
     });
     setSaving(false);
@@ -111,7 +145,7 @@ export default function AdminSponsorsPage() {
       title="Sponsors"
       description="Add, edit, or remove partners on the landing page."
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
         <AdminCard>
           <h2 className="font-semibold mb-4">Add sponsor</h2>
           <form onSubmit={add} className="flex flex-col gap-3">
@@ -120,6 +154,10 @@ export default function AdminSponsorsPage() {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
+            />
+            <TierSelect
+              value={form.tier}
+              onChange={(tier) => setForm({ ...form, tier })}
             />
             <AdminInput
               label="Logo image URL"
@@ -175,6 +213,12 @@ export default function AdminSponsorsPage() {
                           setEditForm({ ...editForm, name: e.target.value })
                         }
                       />
+                      <TierSelect
+                        value={editForm.tier}
+                        onChange={(tier) =>
+                          setEditForm({ ...editForm, tier })
+                        }
+                      />
                       <AdminInput
                         label="Logo URL"
                         value={editForm.logoUrl}
@@ -213,9 +257,11 @@ export default function AdminSponsorsPage() {
                     </div>
                   ) : (
                     <div className="mb-2 min-w-0">
-                      <p className="font-medium">{s.name}</p>
+                      <p className="font-medium break-words">{s.name}</p>
                       <p className="text-xs text-[#888]">
-                        {s.logo_url || s.logo_text || "No logo"} · order{" "}
+                        {SPONSOR_TIER_LABELS[s.tier as SponsorTier] ||
+                          "Supporting Partner"}{" "}
+                        · {s.logo_url || s.logo_text || "No logo"} · order{" "}
                         {s.sort_order}
                       </p>
                     </div>

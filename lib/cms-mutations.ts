@@ -1,4 +1,5 @@
 import { requireSql } from "@/lib/sql";
+import { normalizeSponsorTier } from "@/lib/sponsor-tiers";
 
 export async function updateSponsor(
   id: number,
@@ -7,6 +8,7 @@ export async function updateSponsor(
     logoUrl?: string | null;
     logoText?: string | null;
     websiteUrl?: string | null;
+    tier?: string;
     sortOrder?: number;
   }
 ) {
@@ -18,6 +20,7 @@ export async function updateSponsor(
         logo_url: string | null;
         logo_text: string | null;
         website_url: string | null;
+        tier: string;
         sort_order: number;
       }
     | undefined;
@@ -35,6 +38,10 @@ export async function updateSponsor(
     body.websiteUrl !== undefined
       ? body.websiteUrl?.trim() || null
       : row.website_url;
+  const tier =
+    body.tier !== undefined
+      ? normalizeSponsorTier(body.tier)
+      : normalizeSponsorTier(row.tier);
   const sortOrder =
     body.sortOrder !== undefined ? body.sortOrder : row.sort_order;
 
@@ -45,6 +52,7 @@ export async function updateSponsor(
       logo_url = ${logoUrl},
       logo_text = ${logoText},
       website_url = ${websiteUrl},
+      tier = ${tier},
       sort_order = ${sortOrder}
     WHERE id = ${id}
     RETURNING *

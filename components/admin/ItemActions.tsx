@@ -17,7 +17,7 @@ export function ItemActions({
 }) {
   if (editing) {
     return (
-      <div className="flex gap-2 shrink-0">
+      <div className="flex flex-wrap gap-2 shrink-0">
         <AdminButton type="button" onClick={onSave} disabled={saving}>
           {saving ? "Saving…" : "Save"}
         </AdminButton>
@@ -29,7 +29,7 @@ export function ItemActions({
   }
 
   return (
-    <div className="flex gap-2 shrink-0">
+    <div className="flex flex-wrap gap-2 shrink-0">
       <AdminButton type="button" variant="ghost" onClick={onEdit}>
         Edit
       </AdminButton>

@@ -1,9 +1,12 @@
+import type { SponsorTier } from "@/lib/sponsor-tiers";
+
 export type Sponsor = {
   id: number;
   name: string;
   logoUrl: string | null;
   logoText: string | null;
   websiteUrl: string | null;
+  tier: SponsorTier;
   sortOrder: number;
 };
 
