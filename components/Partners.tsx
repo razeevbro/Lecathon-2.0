@@ -13,33 +13,33 @@ const TIER_LAYOUT: Record<
   { grid: string; card: string; logo: string; text: string }
 > = {
   title: {
-    grid: "flex flex-wrap justify-center items-center gap-4",
-    card: "p-4 sm:p-5 border-yellow-400/30",
-    logo: "h-auto w-auto max-h-32 sm:max-h-40 max-w-[min(100vw-3rem,360px)]",
+    grid: "flex flex-wrap justify-center items-center gap-5 sm:gap-6",
+    card: "p-2 sm:p-3 border-yellow-400/30",
+    logo: "h-auto w-auto max-h-44 sm:max-h-56 md:max-h-64 max-w-[min(100vw-2rem,520px)]",
     text: "text-lg sm:text-xl",
   },
   platinum: {
-    grid: "flex flex-wrap justify-center items-center gap-3 sm:gap-4 max-w-4xl mx-auto",
-    card: "p-3 sm:p-4 border-white/15",
-    logo: "h-auto w-auto max-h-24 sm:max-h-28 max-w-[min(100vw-3rem,280px)]",
+    grid: "flex flex-wrap justify-center items-center gap-4 sm:gap-5 max-w-5xl mx-auto",
+    card: "p-2 sm:p-3 border-white/15",
+    logo: "h-auto w-auto max-h-32 sm:max-h-40 md:max-h-44 max-w-[min(100vw-2rem,400px)]",
     text: "text-base",
   },
   gold: {
-    grid: "flex flex-wrap justify-center items-center gap-3 sm:gap-4 max-w-5xl mx-auto",
-    card: "p-3 sm:p-4",
-    logo: "h-auto w-auto max-h-20 sm:max-h-24 max-w-[min(100vw-3rem,220px)]",
+    grid: "flex flex-wrap justify-center items-center gap-4 sm:gap-5 max-w-5xl mx-auto",
+    card: "p-2 sm:p-3",
+    logo: "h-auto w-auto max-h-28 sm:max-h-32 md:max-h-36 max-w-[min(100vw-2rem,320px)]",
     text: "text-sm",
   },
   silver: {
-    grid: "flex flex-wrap justify-center items-center gap-3 sm:gap-4 max-w-5xl mx-auto",
-    card: "p-3",
-    logo: "h-auto w-auto max-h-16 sm:max-h-20 max-w-[min(100vw-3rem,180px)]",
+    grid: "flex flex-wrap justify-center items-center gap-4 sm:gap-5 max-w-6xl mx-auto",
+    card: "p-2 sm:p-2.5",
+    logo: "h-auto w-auto max-h-24 sm:max-h-28 md:max-h-32 max-w-[min(100vw-2rem,280px)]",
     text: "text-sm",
   },
   supporting_partner: {
-    grid: "flex flex-wrap justify-center items-center gap-3 sm:gap-4 max-w-6xl mx-auto",
-    card: "p-2.5 sm:p-3",
-    logo: "h-auto w-auto max-h-14 sm:max-h-16 max-w-[min(100vw-3rem,150px)]",
+    grid: "flex flex-wrap justify-center items-center gap-4 sm:gap-5 max-w-6xl mx-auto",
+    card: "p-2",
+    logo: "h-auto w-auto max-h-20 sm:max-h-24 md:max-h-28 max-w-[min(100vw-2rem,240px)]",
     text: "text-xs sm:text-sm",
   },
 };
