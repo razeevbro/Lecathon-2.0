@@ -76,6 +76,7 @@ export async function saveRegistration(
       college,
       theme,
       video_url,
+      project_description,
       team_size,
       members
     )
@@ -87,6 +88,7 @@ export async function saveRegistration(
       ${data.college},
       ${data.theme || null},
       ${data.videoUrl},
+      ${data.projectDescription},
       ${data.teamSize},
       ${JSON.stringify(data.members)}::jsonb
     )

@@ -165,6 +165,16 @@ export default function AdminRegistrationsPage() {
                       ) : (
                         <p className="text-[#888]">Video: —</p>
                       )}
+                      {row.projectDescription ? (
+                        <div>
+                          <p className="text-[#888] mb-1">Project description:</p>
+                          <p className="whitespace-pre-wrap text-[#ccc] leading-relaxed">
+                            {row.projectDescription}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-[#888]">Project description: —</p>
+                      )}
                       <div>
                         <p className="text-[#888] mb-1">Members:</p>
                         <ul className="list-disc pl-5 space-y-1">

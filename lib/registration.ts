@@ -11,6 +11,7 @@ export interface RegistrationPayload {
   college?: string;
   theme?: string;
   videoUrl?: string;
+  projectDescription?: string;
   teamSize?: number;
   members?: TeamMember[];
 }
@@ -23,11 +24,22 @@ export interface ValidatedRegistration {
   college: string;
   theme: string;
   videoUrl: string;
+  projectDescription: string;
   teamSize: number;
   members: TeamMember[];
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export const MAX_PROJECT_DESCRIPTION_WORDS = 500;
+
+export function countWords(text: string): number {
+  const trimmed = text.trim();
+  if (!trimmed) {
+    return 0;
+  }
+  return trimmed.split(/\s+/).filter(Boolean).length;
+}
 
 function isValidEmail(email: string): boolean {
   return EMAIL_REGEX.test(email.trim());
@@ -56,6 +68,7 @@ export function validateRegistration(
   const college = body.college?.trim();
   const theme = body.theme?.trim() ?? "";
   const videoUrl = body.videoUrl?.trim() ?? "";
+  const projectDescription = body.projectDescription?.trim() ?? "";
 
   if (!name) {
     return { ok: false, message: "Team leader name is required." };
@@ -71,6 +84,16 @@ export function validateRegistration(
   }
   if (!college) {
     return { ok: false, message: "College / institution is required." };
+  }
+  if (!projectDescription) {
+    return { ok: false, message: "Project description is required." };
+  }
+  const wordCount = countWords(projectDescription);
+  if (wordCount > MAX_PROJECT_DESCRIPTION_WORDS) {
+    return {
+      ok: false,
+      message: `Project description must be ${MAX_PROJECT_DESCRIPTION_WORDS} words or fewer (currently ${wordCount}).`,
+    };
   }
   if (!videoUrl) {
     return { ok: false, message: "Google Drive video link is required." };
@@ -117,6 +140,7 @@ export function validateRegistration(
       college,
       theme,
       videoUrl,
+      projectDescription,
       teamSize,
       members: members.map((m) => ({
         name: m.name.trim(),

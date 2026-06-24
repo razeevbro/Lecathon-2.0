@@ -10,6 +10,7 @@ type RegistrationDbRow = {
   college: string;
   theme: string | null;
   video_url: string | null;
+  project_description: string | null;
   team_size: number;
   members: { name: string; email: string }[];
   registered_at: string;
@@ -41,6 +42,7 @@ function mapRow(row: RegistrationDbRow): RegistrationRow {
     college: row.college,
     theme: row.theme,
     videoUrl: row.video_url,
+    projectDescription: row.project_description,
     teamSize: row.team_size,
     members: parseMembers(row.members),
     registeredAt: row.registered_at,
@@ -77,7 +79,8 @@ export async function listRegistrations(options?: {
         row.teamName.toLowerCase().includes(q) ||
         row.teamLeaderName.toLowerCase().includes(q) ||
         row.teamLeaderEmail.toLowerCase().includes(q) ||
-        row.college.toLowerCase().includes(q)
+        row.college.toLowerCase().includes(q) ||
+        (row.projectDescription?.toLowerCase().includes(q) ?? false)
     );
   }
 
@@ -95,6 +98,7 @@ export function registrationsToCsv(rows: RegistrationRow[]): string {
     "College",
     "Theme",
     "Video URL",
+    "Project Description",
     "Team Size",
     "Members",
   ];
@@ -115,6 +119,7 @@ export function registrationsToCsv(rows: RegistrationRow[]): string {
       row.college,
       row.theme ?? "",
       row.videoUrl ?? "",
+      row.projectDescription ?? "",
       row.teamSize,
       members,
     ]

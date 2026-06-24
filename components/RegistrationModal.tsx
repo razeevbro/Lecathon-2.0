@@ -4,6 +4,10 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle, Loader2 } from "lucide-react";
 import { OPEN_THEME_TITLE } from "@/app/constants";
+import {
+  countWords,
+  MAX_PROJECT_DESCRIPTION_WORDS,
+} from "@/lib/registration";
 import type { RegistrationAvailability } from "@/lib/types/site";
 
 interface Props {
@@ -28,6 +32,7 @@ export default function RegistrationModal({
     teamName: "",
     college: "",
     theme: OPEN_THEME_TITLE,
+    projectDescription: "",
     videoUrl: "",
     teamSize: 1,
     members: [{ ...emptyMember }],
@@ -36,9 +41,18 @@ export default function RegistrationModal({
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const descriptionWords = countWords(form.projectDescription);
+  const descriptionOverLimit =
+    descriptionWords > MAX_PROJECT_DESCRIPTION_WORDS;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (descriptionOverLimit) {
+      setError(
+        `Project description must be ${MAX_PROJECT_DESCRIPTION_WORDS} words or fewer.`
+      );
+      return;
+    }
     setLoading(true);
     setError("");
 
@@ -75,6 +89,7 @@ export default function RegistrationModal({
         teamName: "",
         college: "",
         theme: OPEN_THEME_TITLE,
+        projectDescription: "",
         videoUrl: "",
         teamSize: 1,
         members: [{ ...emptyMember }],
@@ -285,6 +300,29 @@ export default function RegistrationModal({
 
                   <div>
                     <label className="text-xs text-[#A3A3A3] mb-1 block">
+                      Project Description *
+                    </label>
+                    <textarea
+                      required
+                      value={form.projectDescription}
+                      onChange={(e) =>
+                        setForm({ ...form, projectDescription: e.target.value })
+                      }
+                      rows={6}
+                      placeholder="Describe your project idea, problem statement, proposed solution, and expected impact…"
+                      className="w-full bg-[#111] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-yellow-400/50 transition-colors resize-y min-h-[120px]"
+                    />
+                    <p
+                      className={`text-[10px] mt-1 ${
+                        descriptionOverLimit ? "text-red-400" : "text-[#666]"
+                      }`}
+                    >
+                      {descriptionWords} / {MAX_PROJECT_DESCRIPTION_WORDS} words
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-[#A3A3A3] mb-1 block">
                       Google Drive Video Link *
                     </label>
                     <input
@@ -324,7 +362,7 @@ export default function RegistrationModal({
 
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || descriptionOverLimit}
                     className="mt-2 w-full py-2.5 bg-yellow-400 text-black font-bold rounded-full text-sm hover:bg-yellow-300 disabled:opacity-60 transition-all flex items-center justify-center gap-2"
                   >
                     {loading ? (
