@@ -145,7 +145,7 @@ export default function AdminSettingsPage() {
               onChange={(e) =>
                 setForm({ ...form, registrationDeadline: e.target.value })
               }
-              placeholder="2026-06-20T23:59:59"
+              placeholder="2026-06-26T23:00:00+05:45"
             />
             <AdminInput
               label="Max teams (0 = unlimited)"

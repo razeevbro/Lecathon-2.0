@@ -54,7 +54,7 @@ export function parseSiteSettings(
     venueAddress: map.get(SETTINGS_DB_KEYS.venueAddress) ?? d.venueAddress,
     registrationOpen: bool(SETTINGS_DB_KEYS.registrationOpen, d.registrationOpen),
     registrationDeadline:
-      map.get(SETTINGS_DB_KEYS.registrationDeadline) ?? d.registrationDeadline,
+      map.get(SETTINGS_DB_KEYS.registrationDeadline) || d.registrationDeadline,
     maxTeams: num(SETTINGS_DB_KEYS.maxTeams, d.maxTeams),
     registrationClosedMessage:
       map.get(SETTINGS_DB_KEYS.registrationClosedMessage) ??

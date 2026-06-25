@@ -6,21 +6,28 @@ import { ArrowRight, FileText, Monitor, Cpu, Globe, Zap } from "lucide-react";
 import type { RegistrationAvailability } from "@/lib/types/site";
 import RegistrationModal from "./RegistrationModal";
 import RegisterButton from "./RegisterButton";
+import CountdownTimer from "./Countdown";
 
 export default function Hero({
   registrationThemes,
   participantsLabel,
   durationLabel,
   prizePool,
+  registrationDeadline,
   registration,
 }: {
   registrationThemes: string[];
   participantsLabel: string;
   durationLabel: string;
   prizePool: string;
+  registrationDeadline: string;
   registration: RegistrationAvailability;
 }) {
   const [regOpen, setRegOpen] = useState(false);
+  const showRegistrationCountdown =
+    registration.open &&
+    registrationDeadline &&
+    !Number.isNaN(new Date(registrationDeadline).getTime());
 
   return (
     <>
@@ -86,6 +93,13 @@ export default function Hero({
                 Join the most exciting hackathon of the year. Build real solutions,
                 compete with the best minds, and win exciting prizes and opportunities.
               </p>
+
+              {showRegistrationCountdown ? (
+                <CountdownTimer
+                  title="Registration Closes In"
+                  isoDate={registrationDeadline}
+                />
+              ) : null}
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-4 pt-2">

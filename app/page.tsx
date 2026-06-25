@@ -36,6 +36,7 @@ export default async function Home() {
           participantsLabel={content.settings.participantsLabel}
           durationLabel={content.settings.durationLabel}
           prizePool={content.settings.prizePool}
+          registrationDeadline={content.settings.registrationDeadline}
           registration={content.registration}
         />
         <About
