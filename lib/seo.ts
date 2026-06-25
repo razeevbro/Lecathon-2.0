@@ -61,6 +61,9 @@ export function buildSiteMetadata(settings?: Partial<SiteSettings>): Metadata {
         "max-video-preview": -1,
       },
     },
+    verification: {
+      google: "google19ffc417fe610fd8",
+    },
     openGraph: {
       type: "website",
       locale: "en_US",
