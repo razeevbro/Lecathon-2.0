@@ -1,15 +1,39 @@
 "use client";
 
-import { Heart, GitBranch, Globe, Link, Mail, Send } from "lucide-react";
+import type { ReactNode } from "react";
+import { Heart, GitBranch, Globe, Mail, Send } from "lucide-react";
 import { ORGANIZER_NAME } from "@/app/constants";
+import { FacebookIcon } from "@/components/icons/FacebookIcon";
 import type { SiteSettings } from "@/lib/types/site";
 
+type SocialLink = {
+  href: string;
+  label: string;
+  render: () => ReactNode;
+};
+
 export default function Footer({ settings }: { settings: SiteSettings }) {
-  const socials = [
-    { icon: GitBranch, href: settings.socialGithub, label: "GitHub" },
-    { icon: Send, href: settings.socialInstagram, label: "Instagram" },
-    { icon: Link, href: settings.socialFacebook, label: "Facebook" },
-    { icon: Globe, href: settings.socialWebsite, label: "Website" },
+  const socials: SocialLink[] = [
+    {
+      href: settings.socialGithub,
+      label: "GitHub",
+      render: () => <GitBranch size={14} />,
+    },
+    {
+      href: settings.socialInstagram,
+      label: "Instagram",
+      render: () => <Send size={14} />,
+    },
+    {
+      href: settings.socialFacebook,
+      label: "Facebook",
+      render: () => <FacebookIcon size={14} />,
+    },
+    {
+      href: settings.socialWebsite,
+      label: "Website",
+      render: () => <Globe size={14} />,
+    },
   ].filter((s) => s.href?.trim());
 
   return (
@@ -54,7 +78,7 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
             <h4 className="text-white font-semibold text-sm">Follow Us</h4>
             {socials.length > 0 ? (
               <div className="flex gap-3">
-                {socials.map(({ icon: Icon, href, label }) => (
+                {socials.map(({ href, label, render }) => (
                   <a
                     key={label}
                     href={href}
@@ -63,7 +87,7 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
                     aria-label={label}
                     className="w-8 h-8 rounded-full bg-[#1E1E1E] border border-white/10 flex items-center justify-center text-[#A3A3A3] hover:text-yellow-400 hover:border-yellow-400/30 transition-all"
                   >
-                    <Icon size={14} />
+                    {render()}
                   </a>
                 ))}
               </div>

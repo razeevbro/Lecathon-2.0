@@ -25,7 +25,7 @@ const cropped = await sharp(source)
   })
   .resize(512, 512, {
     fit: "contain",
-    background: { r: 255, g: 255, b: 255, alpha: 1 },
+    background: { r: 10, g: 10, b: 10, alpha: 1 },
   })
   .png()
   .toBuffer();
