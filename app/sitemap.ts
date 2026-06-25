@@ -1,17 +1,10 @@
 import type { MetadataRoute } from "next";
-
-function siteUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    "https://lecathon-2-0.vercel.app"
-  );
-}
+import { getSiteUrl } from "@/lib/site-url";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = siteUrl();
   return [
     {
-      url: base,
+      url: getSiteUrl(),
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 1,

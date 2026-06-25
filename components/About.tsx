@@ -76,7 +76,7 @@ export default function About({
             <div className="absolute top-0 left-0 w-3/4 h-3/4 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
               <img
                 src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=500&q=80"
-                alt="Hackathon"
+                alt="Students coding at Lecathon 2.0 hackathon in Nepal"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 to-transparent" />
@@ -85,7 +85,7 @@ export default function About({
             <div className="absolute bottom-0 right-0 w-2/3 h-2/3 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
               <img
                 src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&q=80"
-                alt="Team collaboration"
+                alt="Hackathon team collaborating on a project at LEMSC"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-tl from-black/40 to-transparent" />

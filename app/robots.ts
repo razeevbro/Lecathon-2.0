@@ -1,19 +1,15 @@
 import type { MetadataRoute } from "next";
-
-function siteUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    "https://lecathon-2-0.vercel.app"
-  );
-}
+import { getSiteUrl } from "@/lib/site-url";
 
 export default function robots(): MetadataRoute.Robots {
+  const siteUrl = getSiteUrl();
   return {
     rules: {
       userAgent: "*",
       allow: "/",
       disallow: ["/admin/", "/api/admin/"],
     },
-    sitemap: `${siteUrl()}/sitemap.xml`,
+    sitemap: `${siteUrl}/sitemap.xml`,
+    host: siteUrl,
   };
 }

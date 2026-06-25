@@ -68,15 +68,10 @@ export default function Hero({
               </div>
 
               {/* Main heading */}
-              <div className="flex flex-col gap-1">
-                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight text-white">
-                  Learn,{" "}
-                  <span className="text-yellow-400">Build</span>,
-                </h1>
-                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight text-white">
-                  Innovate
-                </h1>
-              </div>
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight text-white">
+                Learn,{" "}
+                <span className="text-yellow-400">Build</span>, Innovate
+              </h1>
 
               {/* Event title */}
               <div className="flex flex-col gap-1">
