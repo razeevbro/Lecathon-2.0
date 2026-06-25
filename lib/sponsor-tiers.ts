@@ -9,10 +9,10 @@ export const SPONSOR_TIERS = [
 export type SponsorTier = (typeof SPONSOR_TIERS)[number];
 
 export const SPONSOR_TIER_LABELS: Record<SponsorTier, string> = {
-  title: "Title",
-  platinum: "Platinum",
-  gold: "Gold",
-  silver: "Silver",
+  title: "Title Sponsor",
+  platinum: "Platinum Sponsor",
+  gold: "Gold Sponsor",
+  silver: "Silver Sponsor",
   supporting_partner: "Supporting Partner",
 };
 
