@@ -19,7 +19,7 @@ export const defaultSettings: SiteSettings = {
     "Lumbini Engineering Management & Science college",
   venueAddress: "Tilottama-7, Rupandehi, Nepal",
   registrationOpen: true,
-  registrationDeadline: "2026-06-26T23:00:00+05:45",
+  registrationDeadline: "2026-06-27T23:00:00+05:45",
   maxTeams: 0,
   registrationClosedMessage:
     "Registration is closed. Follow Robotics Club of Lumbini Engineering Management & Science College for updates.",
