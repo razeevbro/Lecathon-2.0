@@ -6,4 +6,4 @@ ALTER TABLE sponsors DROP CONSTRAINT IF EXISTS sponsors_tier_check;
 
 ALTER TABLE sponsors
   ADD CONSTRAINT sponsors_tier_check
-  CHECK (tier IN ('title', 'platinum', 'gold', 'silver', 'supporting_partner'));
+  CHECK (tier IN ('title', 'platinum', 'gold', 'silver', 'supporting_partner', 'community_partner'));

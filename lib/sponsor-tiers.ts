@@ -4,6 +4,7 @@ export const SPONSOR_TIERS = [
   "gold",
   "silver",
   "supporting_partner",
+  "community_partner",
 ] as const;
 
 export type SponsorTier = (typeof SPONSOR_TIERS)[number];
@@ -14,6 +15,7 @@ export const SPONSOR_TIER_LABELS: Record<SponsorTier, string> = {
   gold: "Gold Sponsor",
   silver: "Silver Sponsor",
   supporting_partner: "Supporting Partner",
+  community_partner: "Community Partner",
 };
 
 export function isValidSponsorTier(value: string): value is SponsorTier {

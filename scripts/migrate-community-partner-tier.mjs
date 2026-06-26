@@ -7,11 +7,6 @@ loadEnvConfig(process.cwd());
 const sql = neon(process.env.DATABASE_URL);
 
 await sql`
-  ALTER TABLE sponsors
-  ADD COLUMN IF NOT EXISTS tier TEXT NOT NULL DEFAULT 'supporting_partner'
-`;
-
-await sql`
   ALTER TABLE sponsors DROP CONSTRAINT IF EXISTS sponsors_tier_check
 `;
 
@@ -21,4 +16,4 @@ await sql`
   CHECK (tier IN ('title', 'platinum', 'gold', 'silver', 'supporting_partner', 'community_partner'))
 `;
 
-console.log("Added tier column to sponsors");
+console.log("Added community_partner sponsor tier");

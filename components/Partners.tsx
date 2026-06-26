@@ -42,6 +42,12 @@ const TIER_LAYOUT: Record<
     logo: "h-auto w-auto max-h-20 sm:max-h-24 md:max-h-28 max-w-[min(100vw-2rem,240px)]",
     text: "text-xs sm:text-sm",
   },
+  community_partner: {
+    grid: "flex flex-wrap justify-center items-center gap-3 sm:gap-4 max-w-6xl mx-auto",
+    card: "p-2",
+    logo: "h-auto w-auto max-h-16 sm:max-h-20 md:max-h-24 max-w-[min(100vw-2rem,200px)]",
+    text: "text-xs",
+  },
 };
 
 function SponsorCard({

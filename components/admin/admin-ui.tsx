@@ -1,12 +1,15 @@
 export function AdminCard({
   children,
   className = "",
+  id,
 }: {
   children: React.ReactNode;
   className?: string;
+  id?: string;
 }) {
   return (
     <div
+      id={id}
       className={`bg-[#1a1a1a] border border-white/10 rounded-xl p-5 ${className}`}
     >
       {children}

@@ -21,6 +21,7 @@ import {
 import {
   SPONSOR_TIERS,
   SPONSOR_TIER_LABELS,
+  normalizeSponsorTier,
   type SponsorTier,
 } from "@/lib/sponsor-tiers";
 
@@ -51,18 +52,36 @@ function TierSelect({
   onChange: (tier: SponsorTier) => void;
 }) {
   return (
-    <AdminSelect
-      label="Sponsor tier *"
-      value={value}
-      onChange={(e) => onChange(e.target.value as SponsorTier)}
-      required
-    >
-      {SPONSOR_TIERS.map((tier) => (
-        <option key={tier} value={tier}>
-          {SPONSOR_TIER_LABELS[tier]}
-        </option>
-      ))}
-    </AdminSelect>
+    <div className="flex flex-col gap-2">
+      <AdminSelect
+        label="Sponsor tier *"
+        value={value}
+        onChange={(e) => onChange(normalizeSponsorTier(e.target.value))}
+        required
+      >
+        {SPONSOR_TIERS.map((tier) => (
+          <option key={tier} value={tier}>
+            {SPONSOR_TIER_LABELS[tier]}
+          </option>
+        ))}
+      </AdminSelect>
+      <div className="flex flex-wrap gap-2">
+        {SPONSOR_TIERS.map((tier) => (
+          <button
+            key={tier}
+            type="button"
+            onClick={() => onChange(tier)}
+            className={`px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide border transition-colors ${
+              value === tier
+                ? "bg-yellow-400/15 border-yellow-400/40 text-yellow-400"
+                : "bg-[#111] border-white/10 text-[#888] hover:border-white/20 hover:text-white"
+            }`}
+          >
+            {SPONSOR_TIER_LABELS[tier]}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -94,10 +113,113 @@ export default function AdminSponsorsPage() {
       logoUrl: s.logo_url ?? "",
       logoText: s.logo_text ?? "",
       websiteUrl: s.website_url ?? "",
-      tier: (s.tier as SponsorTier) || "supporting_partner",
+      tier: normalizeSponsorTier(s.tier),
       sortOrder: String(s.sort_order),
     });
   };
+
+  const startAddForTier = (tier: SponsorTier) => {
+    setForm({ ...emptyForm, tier });
+    setAddLogoFile(null);
+    setMsg("");
+    document.getElementById("add-sponsor-form")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  const groupedSponsors = SPONSOR_TIERS.map((tier) => ({
+    tier,
+    label: SPONSOR_TIER_LABELS[tier],
+    items: items
+      .filter((s) => normalizeSponsorTier(s.tier) === tier)
+      .sort((a, b) => a.sort_order - b.sort_order || a.id - b.id),
+  }));
+
+  const renderSponsorItem = (s: SponsorRow) => (
+    <li
+      key={s.id}
+      className="p-3 bg-[#111] rounded-lg border border-white/5"
+    >
+      {editingId === s.id ? (
+        <div className="flex flex-col gap-2 mb-3">
+          <AdminInput
+            label="Name"
+            value={editForm.name}
+            onChange={(e) =>
+              setEditForm({ ...editForm, name: e.target.value })
+            }
+          />
+          <TierSelect
+            value={editForm.tier}
+            onChange={(tier) => setEditForm({ ...editForm, tier })}
+          />
+          <SponsorLogoUpload
+            label="Logo image"
+            currentUrl={editForm.logoUrl || undefined}
+            onChange={setEditLogoFile}
+          />
+          <AdminInput
+            label="Logo alt text"
+            value={editForm.logoText}
+            onChange={(e) =>
+              setEditForm({ ...editForm, logoText: e.target.value })
+            }
+          />
+          <AdminInput
+            label="Website"
+            value={editForm.websiteUrl}
+            onChange={(e) =>
+              setEditForm({
+                ...editForm,
+                websiteUrl: e.target.value,
+              })
+            }
+          />
+          <AdminInput
+            label="Sort order"
+            type="number"
+            value={editForm.sortOrder}
+            onChange={(e) =>
+              setEditForm({
+                ...editForm,
+                sortOrder: e.target.value,
+              })
+            }
+          />
+        </div>
+      ) : (
+        <div className="mb-2 min-w-0 flex gap-3 items-start">
+          {s.logo_url ? (
+            <img
+              src={s.logo_url}
+              alt={s.logo_text || s.name}
+              className="w-12 h-12 object-contain rounded bg-[#0a0a0a] border border-white/10 p-1 shrink-0"
+            />
+          ) : null}
+          <div className="min-w-0">
+            <p className="font-medium break-words">{s.name}</p>
+            <p className="text-xs text-[#888]">
+              {SPONSOR_TIER_LABELS[normalizeSponsorTier(s.tier)]} ·{" "}
+              {s.logo_url ? "Logo uploaded" : s.logo_text || "No logo"} · order{" "}
+              {s.sort_order}
+            </p>
+          </div>
+        </div>
+      )}
+      <ItemActions
+        editing={editingId === s.id}
+        onEdit={() => startEdit(s)}
+        onCancel={() => {
+          setEditingId(null);
+          setEditLogoFile(null);
+        }}
+        onSave={saveEdit}
+        onDelete={() => remove(s.id)}
+        saving={saving}
+      />
+    </li>
+  );
 
   const add = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,10 +295,10 @@ export default function AdminSponsorsPage() {
   return (
     <AdminShell
       title="Sponsors"
-      description="Add, edit, or remove partners on the landing page."
+      description="Manage partners by tier — Title, Platinum, Gold, Silver, Supporting Partner, and Community Partner."
     >
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
-        <AdminCard>
+        <AdminCard id="add-sponsor-form">
           <h2 className="font-semibold mb-4">Add sponsor</h2>
           <form onSubmit={add} className="flex flex-col gap-3">
             <AdminInput
@@ -230,95 +352,33 @@ export default function AdminSponsorsPage() {
               seeding={seeding}
             />
           ) : (
-            <ul className="flex flex-col gap-3">
-              {items.map((s) => (
-                <li
-                  key={s.id}
-                  className="p-3 bg-[#111] rounded-lg border border-white/5"
-                >
-                  {editingId === s.id ? (
-                    <div className="flex flex-col gap-2 mb-3">
-                      <AdminInput
-                        label="Name"
-                        value={editForm.name}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, name: e.target.value })
-                        }
-                      />
-                      <TierSelect
-                        value={editForm.tier}
-                        onChange={(tier) =>
-                          setEditForm({ ...editForm, tier })
-                        }
-                      />
-                      <SponsorLogoUpload
-                        label="Logo image"
-                        currentUrl={editForm.logoUrl || undefined}
-                        onChange={setEditLogoFile}
-                      />
-                      <AdminInput
-                        label="Logo alt text"
-                        value={editForm.logoText}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, logoText: e.target.value })
-                        }
-                      />
-                      <AdminInput
-                        label="Website"
-                        value={editForm.websiteUrl}
-                        onChange={(e) =>
-                          setEditForm({
-                            ...editForm,
-                            websiteUrl: e.target.value,
-                          })
-                        }
-                      />
-                      <AdminInput
-                        label="Sort order"
-                        type="number"
-                        value={editForm.sortOrder}
-                        onChange={(e) =>
-                          setEditForm({
-                            ...editForm,
-                            sortOrder: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
+            <div className="flex flex-col gap-6">
+              {groupedSponsors.map((section) => (
+                <div key={section.tier}>
+                  <div className="flex items-center justify-between gap-3 mb-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#888]">
+                      {section.label}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => startAddForTier(section.tier)}
+                      className="text-[10px] text-yellow-400 hover:text-yellow-300 uppercase tracking-wide"
+                    >
+                      + Add {section.label.toLowerCase()}
+                    </button>
+                  </div>
+                  {section.items.length === 0 ? (
+                    <p className="text-xs text-[#666] italic px-3 py-4 bg-[#111] rounded-lg border border-dashed border-white/10">
+                      No {section.label.toLowerCase()}s yet.
+                    </p>
                   ) : (
-                    <div className="mb-2 min-w-0 flex gap-3 items-start">
-                      {s.logo_url ? (
-                        <img
-                          src={s.logo_url}
-                          alt={s.logo_text || s.name}
-                          className="w-12 h-12 object-contain rounded bg-[#0a0a0a] border border-white/10 p-1 shrink-0"
-                        />
-                      ) : null}
-                      <div className="min-w-0">
-                        <p className="font-medium break-words">{s.name}</p>
-                        <p className="text-xs text-[#888]">
-                          {SPONSOR_TIER_LABELS[s.tier as SponsorTier] ||
-                            "Supporting Partner"}{" "}
-                          · {s.logo_url ? "Logo uploaded" : s.logo_text || "No logo"} · order{" "}
-                          {s.sort_order}
-                        </p>
-                      </div>
-                    </div>
+                    <ul className="flex flex-col gap-3">
+                      {section.items.map((s) => renderSponsorItem(s))}
+                    </ul>
                   )}
-                  <ItemActions
-                    editing={editingId === s.id}
-                    onEdit={() => startEdit(s)}
-                    onCancel={() => {
-                      setEditingId(null);
-                      setEditLogoFile(null);
-                    }}
-                    onSave={saveEdit}
-                    onDelete={() => remove(s.id)}
-                    saving={saving}
-                  />
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </AdminCard>
       </div>
