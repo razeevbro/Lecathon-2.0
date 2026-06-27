@@ -12,6 +12,8 @@ export default function AdminRegistrationsPage() {
   const [theme, setTheme] = useState("all");
   const [expanded, setExpanded] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [sendingThankYou, setSendingThankYou] = useState(false);
+  const [sendingTeamId, setSendingTeamId] = useState<number | null>(null);
 
   const url = useMemo(() => {
     const params = new URLSearchParams();
@@ -34,6 +36,48 @@ export default function AdminRegistrationsPage() {
 
   const toggle = (id: number) => {
     setExpanded((prev) => (prev === id ? null : id));
+  };
+
+  const sendThankYouToAll = async () => {
+    if (
+      !confirm(
+        "Send thank-you email to ALL registered team leaders? Each leader will receive one email about top 10 selection."
+      )
+    ) {
+      return;
+    }
+
+    setSendingThankYou(true);
+    setMsg("");
+    const res = await fetch("/api/admin/registrations/thank-you", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    const data = await res.json();
+    setSendingThankYou(false);
+    setMsg(data.message || (data.success ? "Emails sent." : "Failed to send emails."));
+  };
+
+  const sendThankYouToTeam = async (row: RegistrationRow) => {
+    if (
+      !confirm(
+        `Send thank-you email to ${row.teamLeaderName} (${row.teamLeaderEmail})?`
+      )
+    ) {
+      return;
+    }
+
+    setSendingTeamId(row.id);
+    setMsg("");
+    const res = await fetch("/api/admin/registrations/thank-you", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: [row.id] }),
+    });
+    const data = await res.json();
+    setSendingTeamId(null);
+    setMsg(data.message || (data.success ? "Email sent." : "Failed to send email."));
   };
 
   const remove = async (row: RegistrationRow) => {
@@ -91,18 +135,33 @@ export default function AdminRegistrationsPage() {
         </label>
       </div>
 
-      <div className="flex gap-3 mb-6">
+      <div className="flex flex-wrap gap-3 mb-6">
         <a href="/api/admin/registrations?format=csv">
           <AdminButton type="button">Download CSV</AdminButton>
         </a>
+        <AdminButton
+          type="button"
+          onClick={sendThankYouToAll}
+          disabled={sendingThankYou || loading}
+        >
+          {sendingThankYou ? "Sending emails…" : "Email all thank-you"}
+        </AdminButton>
         <AdminButton type="button" variant="ghost" onClick={load}>
           Refresh
         </AdminButton>
       </div>
+      <p className="text-xs text-[#888] mb-4 -mt-2">
+        Thank-you emails go to each team leader and mention top 10 selection.
+        Requires SMTP to be configured in Vercel.
+      </p>
 
       {msg && (
         <p
-          className={`text-sm mb-4 ${msg.includes("deleted") || msg.includes("Deleted") ? "text-green-400" : "text-red-400"}`}
+          className={`text-sm mb-4 ${
+            msg.includes("sent") || msg.includes("Sent") || msg.includes("deleted") || msg.includes("Deleted")
+              ? "text-green-400"
+              : "text-red-400"
+          }`}
         >
           {msg}
         </p>
@@ -185,14 +244,25 @@ export default function AdminRegistrationsPage() {
                           ))}
                         </ul>
                       </div>
-                      <AdminButton
-                        type="button"
-                        variant="danger"
-                        disabled={deletingId === row.id}
-                        onClick={() => remove(row)}
-                      >
-                        {deletingId === row.id ? "Deleting…" : "Delete registration"}
-                      </AdminButton>
+                      <div className="flex flex-wrap gap-2">
+                        <AdminButton
+                          type="button"
+                          disabled={sendingTeamId === row.id}
+                          onClick={() => sendThankYouToTeam(row)}
+                        >
+                          {sendingTeamId === row.id
+                            ? "Sending…"
+                            : "Send thank-you email"}
+                        </AdminButton>
+                        <AdminButton
+                          type="button"
+                          variant="danger"
+                          disabled={deletingId === row.id}
+                          onClick={() => remove(row)}
+                        >
+                          {deletingId === row.id ? "Deleting…" : "Delete registration"}
+                        </AdminButton>
+                      </div>
                     </div>
                   )}
                 </li>

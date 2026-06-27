@@ -1,8 +1,30 @@
 import nodemailer from "nodemailer";
 import { ORGANIZER_NAME } from "@/app/constants";
 import type { ValidatedRegistration } from "@/lib/registration";
+import type { RegistrationRow } from "@/lib/types/site";
 
 type SendResult = { ok: true } | { ok: false; error: string };
+
+export type ThankYouRecipient = {
+  leaderName: string;
+  leaderEmail: string;
+  teamName: string;
+  college: string;
+  theme: string | null;
+  registrationId: string;
+};
+
+export type ThankYouBulkResult = {
+  sent: number;
+  failed: number;
+  results: {
+    id: number;
+    teamName: string;
+    email: string;
+    ok: boolean;
+    error?: string;
+  }[];
+};
 
 type EmailProvider = "smtp" | "resend";
 
@@ -178,23 +200,105 @@ function adminNotificationHtml(
   `;
 }
 
-function confirmationHtml(
-  data: ValidatedRegistration,
-  registrationId: string
-): string {
+function buildThankYouHtml(recipient: ThankYouRecipient): string {
   return `
     <div style="font-family:sans-serif;max-width:560px;color:#111;">
       <h2 style="color:#111;margin:0 0 16px;">Thank you for registering for Lecathon 2.0</h2>
-      <p>Hi ${escapeHtml(data.name)},</p>
-      <p>Thank you for registering. Your team <strong>${escapeHtml(data.teamName)}</strong> has been registered successfully.</p>
-      <p style="margin:0 0 8px;"><strong>Reference:</strong> ${escapeHtml(registrationId)}</p>
-      <p style="margin:0 0 8px;"><strong>College:</strong> ${escapeHtml(data.college)}</p>
-      <p style="margin:0 0 8px;"><strong>Preferred theme:</strong> ${escapeHtml(data.theme || "Not selected")}</p>
+      <p>Hi ${escapeHtml(recipient.leaderName)},</p>
+      <p>Thank you for registering. Your team <strong>${escapeHtml(recipient.teamName)}</strong> has been registered successfully.</p>
+      <p style="margin:0 0 8px;"><strong>Reference:</strong> ${escapeHtml(recipient.registrationId)}</p>
+      <p style="margin:0 0 8px;"><strong>College:</strong> ${escapeHtml(recipient.college)}</p>
+      <p style="margin:0 0 8px;"><strong>Preferred theme:</strong> ${escapeHtml(recipient.theme || "Not selected")}</p>
       <p style="margin:16px 0 0;">We will contact you at this email if your team is selected among the <strong>top 10 teams</strong> for further processing.</p>
       <p style="margin:12px 0 0;">Best of luck, and thank you for being part of Lecathon 2.0.</p>
       <p style="margin:24px 0 0;font-size:12px;color:#666;">— ${ORGANIZER_NAME} · Lecathon 2.0</p>
     </div>
   `;
+}
+
+function confirmationHtml(
+  data: ValidatedRegistration,
+  registrationId: string
+): string {
+  return buildThankYouHtml({
+    leaderName: data.name,
+    leaderEmail: data.email,
+    teamName: data.teamName,
+    college: data.college,
+    theme: data.theme ?? null,
+    registrationId,
+  });
+}
+
+function registrationRowToThankYou(row: RegistrationRow): ThankYouRecipient {
+  return {
+    leaderName: row.teamLeaderName,
+    leaderEmail: row.teamLeaderEmail,
+    teamName: row.teamName,
+    college: row.college,
+    theme: row.theme,
+    registrationId: `REG-${row.id}`,
+  };
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+const THANK_YOU_SUBJECT = "Lecathon 2.0 — Thank you for registering";
+
+export async function sendThankYouEmail(
+  recipient: ThankYouRecipient
+): Promise<SendResult> {
+  return sendEmail({
+    to: recipient.leaderEmail,
+    subject: THANK_YOU_SUBJECT,
+    html: buildThankYouHtml(recipient),
+  });
+}
+
+export async function sendThankYouToRegistrations(
+  rows: RegistrationRow[]
+): Promise<ThankYouBulkResult> {
+  if (!getProvider()) {
+    throw new Error(
+      "Email not configured. Set SMTP_USER, SMTP_PASS, EMAIL_FROM, and ADMIN_NOTIFICATION_EMAIL."
+    );
+  }
+
+  const results: ThankYouBulkResult["results"] = [];
+  let sent = 0;
+  let failed = 0;
+
+  for (const row of rows) {
+    const recipient = registrationRowToThankYou(row);
+    const result = await sendThankYouEmail(recipient);
+
+    if (result.ok) {
+      sent += 1;
+      results.push({
+        id: row.id,
+        teamName: row.teamName,
+        email: row.teamLeaderEmail,
+        ok: true,
+      });
+    } else {
+      failed += 1;
+      results.push({
+        id: row.id,
+        teamName: row.teamName,
+        email: row.teamLeaderEmail,
+        ok: false,
+        error: result.error,
+      });
+    }
+
+    if (rows.length > 1) {
+      await sleep(750);
+    }
+  }
+
+  return { sent, failed, results };
 }
 
 export function isEmailConfigured(): boolean {
@@ -264,7 +368,7 @@ export async function sendRegistrationEmails(
   if (sendConfirmation) {
     confirmation = await sendEmail({
       to: data.email,
-      subject: "Lecathon 2.0 — Thank you for registering",
+      subject: THANK_YOU_SUBJECT,
       html: confirmationHtml(data, registrationId),
     });
   }
