@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { listRegistrations } from "@/lib/registrations";
 import {
   registrationsToCsv,
+  registrationsToHtml,
   registrationsToXlsx,
 } from "@/lib/registrations-export";
 
 export const dynamic = "force-dynamic";
 
-function exportFilename(ext: "csv" | "xlsx"): string {
+function exportFilename(ext: "csv" | "xlsx" | "html"): string {
   return `lecathon-registrations-${new Date().toISOString().slice(0, 10)}.${ext}`;
 }
 
@@ -25,6 +26,17 @@ export async function GET(req: NextRequest) {
         headers: {
           "Content-Type": "text/csv; charset=utf-8",
           "Content-Disposition": `attachment; filename="${exportFilename("csv")}"`,
+        },
+      });
+    }
+
+    if (format === "html") {
+      const html = registrationsToHtml(rows);
+      return new NextResponse(html, {
+        status: 200,
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Content-Disposition": `attachment; filename="${exportFilename("html")}"`,
         },
       });
     }

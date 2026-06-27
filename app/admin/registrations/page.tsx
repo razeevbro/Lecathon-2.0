@@ -23,7 +23,7 @@ export default function AdminRegistrationsPage() {
     return `/api/admin/registrations${qs ? `?${qs}` : ""}`;
   }, [search, theme]);
 
-  const buildExportUrl = (format: "xlsx" | "csv") => {
+  const buildExportUrl = (format: "html" | "xlsx" | "csv") => {
     const params = new URLSearchParams();
     params.set("format", format);
     if (search.trim()) params.set("q", search.trim());
@@ -144,8 +144,13 @@ export default function AdminRegistrationsPage() {
       </div>
 
       <div className="flex flex-wrap gap-3 mb-6">
+        <a href={buildExportUrl("html")}>
+          <AdminButton type="button">Download Report</AdminButton>
+        </a>
         <a href={buildExportUrl("xlsx")}>
-          <AdminButton type="button">Download Excel</AdminButton>
+          <AdminButton type="button" variant="ghost">
+            Download Excel
+          </AdminButton>
         </a>
         <a href={buildExportUrl("csv")}>
           <AdminButton type="button" variant="ghost">
@@ -164,9 +169,9 @@ export default function AdminRegistrationsPage() {
         </AdminButton>
       </div>
       <p className="text-xs text-[#888] -mt-4 mb-6">
-        Use Excel download for the cleanest layout. Exports respect your current
-        search and theme filters. Thank-you emails go to each team leader and
-        mention top 10 selection.
+        Use Download Report for a readable HTML file (best for project
+        descriptions). Excel has a compact Summary sheet plus Project Details.
+        Exports respect your current search and theme filters.
       </p>
 
       {msg && (
