@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
 
     if (format === "xlsx") {
       const xlsx = await registrationsToXlsx(rows);
-      return new NextResponse(xlsx, {
+      return new NextResponse(new Uint8Array(xlsx), {
         status: 200,
         headers: {
           "Content-Type":
