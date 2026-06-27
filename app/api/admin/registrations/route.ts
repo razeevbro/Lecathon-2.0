@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { listRegistrations } from "@/lib/registrations";
 import {
-  listRegistrations,
   registrationsToCsv,
-} from "@/lib/registrations";
+  registrationsToXlsx,
+} from "@/lib/registrations-export";
 
 export const dynamic = "force-dynamic";
+
+function exportFilename(ext: "csv" | "xlsx"): string {
+  return `lecathon-registrations-${new Date().toISOString().slice(0, 10)}.${ext}`;
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -19,7 +24,19 @@ export async function GET(req: NextRequest) {
         status: 200,
         headers: {
           "Content-Type": "text/csv; charset=utf-8",
-          "Content-Disposition": `attachment; filename="lecathon-registrations-${new Date().toISOString().slice(0, 10)}.csv"`,
+          "Content-Disposition": `attachment; filename="${exportFilename("csv")}"`,
+        },
+      });
+    }
+
+    if (format === "xlsx") {
+      const xlsx = await registrationsToXlsx(rows);
+      return new NextResponse(xlsx, {
+        status: 200,
+        headers: {
+          "Content-Type":
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "Content-Disposition": `attachment; filename="${exportFilename("xlsx")}"`,
         },
       });
     }

@@ -23,6 +23,14 @@ export default function AdminRegistrationsPage() {
     return `/api/admin/registrations${qs ? `?${qs}` : ""}`;
   }, [search, theme]);
 
+  const buildExportUrl = (format: "xlsx" | "csv") => {
+    const params = new URLSearchParams();
+    params.set("format", format);
+    if (search.trim()) params.set("q", search.trim());
+    if (theme !== "all") params.set("theme", theme);
+    return `/api/admin/registrations?${params.toString()}`;
+  };
+
   const { items: rows, loading, msg, setMsg, load } =
     useAdminResource<RegistrationRow>(url);
 
@@ -136,8 +144,13 @@ export default function AdminRegistrationsPage() {
       </div>
 
       <div className="flex flex-wrap gap-3 mb-6">
-        <a href="/api/admin/registrations?format=csv">
-          <AdminButton type="button">Download CSV</AdminButton>
+        <a href={buildExportUrl("xlsx")}>
+          <AdminButton type="button">Download Excel</AdminButton>
+        </a>
+        <a href={buildExportUrl("csv")}>
+          <AdminButton type="button" variant="ghost">
+            Download CSV
+          </AdminButton>
         </a>
         <AdminButton
           type="button"
@@ -150,15 +163,19 @@ export default function AdminRegistrationsPage() {
           Refresh
         </AdminButton>
       </div>
-      <p className="text-xs text-[#888] mb-4 -mt-2">
-        Thank-you emails go to each team leader and mention top 10 selection.
-        Requires SMTP to be configured in Vercel.
+      <p className="text-xs text-[#888] -mt-4 mb-6">
+        Use Excel download for the cleanest layout. Exports respect your current
+        search and theme filters. Thank-you emails go to each team leader and
+        mention top 10 selection.
       </p>
 
       {msg && (
         <p
           className={`text-sm mb-4 ${
-            msg.includes("sent") || msg.includes("Sent") || msg.includes("deleted") || msg.includes("Deleted")
+            msg.includes("sent") ||
+            msg.includes("Sent") ||
+            msg.includes("deleted") ||
+            msg.includes("Deleted")
               ? "text-green-400"
               : "text-red-400"
           }`}

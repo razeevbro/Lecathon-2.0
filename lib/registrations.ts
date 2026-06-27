@@ -87,49 +87,6 @@ export async function listRegistrations(options?: {
   return mapped;
 }
 
-export function registrationsToCsv(rows: RegistrationRow[]): string {
-  const headers = [
-    "ID",
-    "Registered At",
-    "Team Leader",
-    "Leader Email",
-    "Phone",
-    "Team Name",
-    "College",
-    "Theme",
-    "Video URL",
-    "Project Description",
-    "Team Size",
-    "Members",
-  ];
-
-  const escape = (value: string) => `"${value.replace(/"/g, '""')}"`;
-
-  const lines = rows.map((row) => {
-    const members = row.members
-      .map((m) => `${m.name} <${m.email}>`)
-      .join("; ");
-    return [
-      row.id,
-      row.registeredAt,
-      row.teamLeaderName,
-      row.teamLeaderEmail,
-      row.phone,
-      row.teamName,
-      row.college,
-      row.theme ?? "",
-      row.videoUrl ?? "",
-      row.projectDescription ?? "",
-      row.teamSize,
-      members,
-    ]
-      .map((v) => escape(String(v)))
-      .join(",");
-  });
-
-  return [headers.join(","), ...lines].join("\n");
-}
-
 export async function deleteRegistration(id: number): Promise<boolean> {
   const sql = requireSql();
   const rows = await sql`
