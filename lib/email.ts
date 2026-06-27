@@ -184,14 +184,14 @@ function confirmationHtml(
 ): string {
   return `
     <div style="font-family:sans-serif;max-width:560px;color:#111;">
-      <h2 style="color:#111;margin:0 0 16px;">You're registered for Lecathon 2.0</h2>
+      <h2 style="color:#111;margin:0 0 16px;">Thank you for registering for Lecathon 2.0</h2>
       <p>Hi ${escapeHtml(data.name)},</p>
-      <p>Your team <strong>${escapeHtml(data.teamName)}</strong> has been registered successfully.</p>
+      <p>Thank you for registering. Your team <strong>${escapeHtml(data.teamName)}</strong> has been registered successfully.</p>
       <p style="margin:0 0 8px;"><strong>Reference:</strong> ${escapeHtml(registrationId)}</p>
       <p style="margin:0 0 8px;"><strong>College:</strong> ${escapeHtml(data.college)}</p>
       <p style="margin:0 0 8px;"><strong>Preferred theme:</strong> ${escapeHtml(data.theme || "Not selected")}</p>
-      <p style="margin:0 0 8px;"><strong>Video link received:</strong> yes</p>
-      <p>We'll send event details and next steps to this email soon. Keep an eye on your inbox.</p>
+      <p style="margin:16px 0 0;">We will contact you at this email if your team is selected among the <strong>top 10 teams</strong> for further processing.</p>
+      <p style="margin:12px 0 0;">Best of luck, and thank you for being part of Lecathon 2.0.</p>
       <p style="margin:24px 0 0;font-size:12px;color:#666;">— ${ORGANIZER_NAME} · Lecathon 2.0</p>
     </div>
   `;
@@ -264,7 +264,7 @@ export async function sendRegistrationEmails(
   if (sendConfirmation) {
     confirmation = await sendEmail({
       to: data.email,
-      subject: "Lecathon 2.0 — Registration confirmed",
+      subject: "Lecathon 2.0 — Thank you for registering",
       html: confirmationHtml(data, registrationId),
     });
   }

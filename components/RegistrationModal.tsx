@@ -130,7 +130,8 @@ export default function RegistrationModal({
                   You&apos;re Registered!
                 </h3>
                 <p className="text-[#A3A3A3] text-sm">
-                  We&apos;ll send event details to your email shortly.
+                  Thank you for registering. We will contact you if your team is
+                  selected among the top 10 for further processing.
                 </p>
                 <button
                   onClick={handleClose}

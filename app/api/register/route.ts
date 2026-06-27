@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: "Registration successful! We'll be in touch soon.",
+        message: "Registration successful! Check your email for a confirmation.",
         data: {
           id,
           name: data.name,
