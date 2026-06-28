@@ -15,5 +15,5 @@ export async function fetchSettingsFromDb(): Promise<SiteSettings> {
     (rows as { key: string; value: string }[]).map((r) => [r.key, r.value])
   );
 
-  return parseSiteSettings(map);
+  return { ...defaults, ...parseSiteSettings(map) };
 }

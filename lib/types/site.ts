@@ -55,6 +55,7 @@ export type SiteSettings = {
   registrationDeadline: string;
   maxTeams: number;
   registrationClosedMessage: string;
+  resultsAnnouncementDate: string;
   socialGithub: string;
   socialInstagram: string;
   socialFacebook: string;

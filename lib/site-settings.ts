@@ -15,6 +15,7 @@ export const SETTINGS_DB_KEYS = {
   registrationDeadline: "registration_deadline",
   maxTeams: "max_teams",
   registrationClosedMessage: "registration_closed_message",
+  resultsAnnouncementDate: "results_announcement_date",
   socialGithub: "social_github",
   socialInstagram: "social_instagram",
   socialFacebook: "social_facebook",
@@ -59,6 +60,9 @@ export function parseSiteSettings(
     registrationClosedMessage:
       map.get(SETTINGS_DB_KEYS.registrationClosedMessage) ??
       d.registrationClosedMessage,
+    resultsAnnouncementDate:
+      map.get(SETTINGS_DB_KEYS.resultsAnnouncementDate) ||
+      d.resultsAnnouncementDate,
     socialGithub: map.get(SETTINGS_DB_KEYS.socialGithub) ?? d.socialGithub,
     socialInstagram:
       map.get(SETTINGS_DB_KEYS.socialInstagram) ?? d.socialInstagram,
@@ -96,6 +100,7 @@ export function siteSettingsToDbEntries(
       SETTINGS_DB_KEYS.registrationClosedMessage,
       settings.registrationClosedMessage,
     ],
+    [SETTINGS_DB_KEYS.resultsAnnouncementDate, settings.resultsAnnouncementDate],
     [SETTINGS_DB_KEYS.socialGithub, settings.socialGithub],
     [SETTINGS_DB_KEYS.socialInstagram, settings.socialInstagram],
     [SETTINGS_DB_KEYS.socialFacebook, settings.socialFacebook],

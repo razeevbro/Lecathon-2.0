@@ -120,8 +120,8 @@ export default function AdminResultsPage() {
             <p className="text-sm text-[#888]">Loading…</p>
           ) : items.length === 0 ? (
             <p className="text-sm text-[#888]">
-              No teams added yet. Add up to 10 teams before the announcement at
-              10:00 PM Nepal time.
+              No teams added yet. Add up to 10 teams before the reveal time set in
+              Site Settings.
             </p>
           ) : (
             <ul className="flex flex-col gap-3">

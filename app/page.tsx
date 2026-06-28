@@ -38,6 +38,7 @@ export default async function Home() {
           prizePool={content.settings.prizePool}
           registrationDeadline={content.settings.registrationDeadline}
           registration={content.registration}
+          resultsAnnouncementDate={content.settings.resultsAnnouncementDate}
           resultsTeams={content.resultsTeams}
         />
         <About

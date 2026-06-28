@@ -23,6 +23,7 @@ export const defaultSettings: SiteSettings = {
   maxTeams: 0,
   registrationClosedMessage:
     "Registration is closed. Follow Robotics Club of Lumbini Engineering Management & Science College for updates.",
+  resultsAnnouncementDate: "2026-06-28T22:00:00+05:45",
   socialGithub: "",
   socialInstagram: "",
   socialFacebook: "",

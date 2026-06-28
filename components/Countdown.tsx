@@ -2,9 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
+import type { RevealTimeLeft } from "@/lib/results-announcement";
 
 function useCountdown(isoDate: string) {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
+  const [timeLeft, setTimeLeft] = useState<RevealTimeLeft>({
+    days: 0,
+    hours: 0,
+    mins: 0,
+    secs: 0,
+  });
 
   useEffect(() => {
     const target = new Date(isoDate);
@@ -47,11 +53,14 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
 export default function CountdownTimer({
   title,
   isoDate,
+  timeLeft: controlledTimeLeft,
 }: {
   title: string;
   isoDate: string;
+  timeLeft?: RevealTimeLeft;
 }) {
-  const timeLeft = useCountdown(isoDate);
+  const internalTimeLeft = useCountdown(isoDate);
+  const timeLeft = controlledTimeLeft ?? internalTimeLeft;
 
   return (
     <div className="mt-2">

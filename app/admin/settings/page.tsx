@@ -9,6 +9,7 @@ import {
   AdminTextarea,
 } from "@/components/admin/admin-ui";
 import type { SiteSettings } from "@/lib/types/site";
+import { defaultSettings } from "@/lib/defaults";
 
 export default function AdminSettingsPage() {
   const [form, setForm] = useState<SiteSettings | null>(null);
@@ -20,7 +21,7 @@ export default function AdminSettingsPage() {
     fetch("/api/admin/settings")
       .then((r) => r.json())
       .then((d) => {
-        if (d.success) setForm(d.data);
+        if (d.success) setForm({ ...defaultSettings, ...d.data });
       });
   }, []);
 
@@ -34,7 +35,7 @@ export default function AdminSettingsPage() {
     });
     const data = await res.json();
     setMsg(data.success ? "Settings saved." : data.message);
-    if (data.success) setForm(data.data);
+    if (data.success) setForm({ ...defaultSettings, ...data.data });
   };
 
   const testEmail = async () => {
@@ -163,6 +164,18 @@ export default function AdminSettingsPage() {
                 setForm({ ...form, registrationClosedMessage: e.target.value })
               }
             />
+            <AdminInput
+              label="Results reveal time (ISO)"
+              value={form.resultsAnnouncementDate ?? ""}
+              onChange={(e) =>
+                setForm({ ...form, resultsAnnouncementDate: e.target.value })
+              }
+              placeholder="2026-06-28T22:00:00+05:45"
+            />
+            <p className="text-[10px] text-[#666] -mt-1">
+              When the countdown ends, the top 10 list appears on the homepage.
+              Use Nepal time (+05:45).
+            </p>
           </div>
         </AdminCard>
 

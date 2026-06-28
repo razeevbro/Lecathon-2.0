@@ -1,36 +1,106 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy } from "lucide-react";
 import CountdownTimer from "@/components/Countdown";
 import type { ResultsTeam } from "@/lib/types/site";
+import { useResultsReveal } from "@/lib/use-results-reveal";
+
+function formatAnnouncementLabel(isoDate: string): string {
+  const date = new Date(isoDate);
+  if (Number.isNaN(date.getTime())) {
+    return "the scheduled time";
+  }
+
+  return date.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "Asia/Kathmandu",
+    timeZoneName: "short",
+  });
+}
+
+type ResultsResponse = {
+  revealed: boolean;
+  teams: ResultsTeam[];
+};
 
 export default function ResultsAnnouncement({
   announcementDate,
-  teams = [],
+  teams: initialTeams = [],
 }: {
   announcementDate: string;
   teams?: ResultsTeam[];
 }) {
-  const [resultsOut, setResultsOut] = useState(
-    () => Date.now() >= new Date(announcementDate).getTime()
-  );
+  const router = useRouter();
+  const { announcementDate: resolvedDate, revealed, timeLeft } =
+    useResultsReveal(announcementDate);
+  const [teams, setTeams] = useState(initialTeams);
+  const [loadingTeams, setLoadingTeams] = useState(false);
 
   useEffect(() => {
-    const target = new Date(announcementDate).getTime();
-    const tick = () => setResultsOut(Date.now() >= target);
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [announcementDate]);
+    setTeams(initialTeams);
+  }, [initialTeams]);
+
+  useEffect(() => {
+    if (!revealed) {
+      return;
+    }
+
+    let cancelled = false;
+    let pollId: number | undefined;
+
+    async function loadTeams() {
+      setLoadingTeams(true);
+      try {
+        const res = await fetch("/api/results", { cache: "no-store" });
+        if (!res.ok) {
+          return;
+        }
+
+        const data = (await res.json()) as ResultsResponse;
+        if (!cancelled && data.revealed && Array.isArray(data.teams)) {
+          setTeams(data.teams);
+          if (data.teams.length > 0 && pollId !== undefined) {
+            window.clearInterval(pollId);
+          }
+        }
+      } catch {
+        // Keep showing any teams already loaded from the server.
+      } finally {
+        if (!cancelled) {
+          setLoadingTeams(false);
+        }
+      }
+    }
+
+    router.refresh();
+    void loadTeams();
+
+    pollId = window.setInterval(() => {
+      void loadTeams();
+    }, 15_000);
+
+    return () => {
+      cancelled = true;
+      if (pollId !== undefined) {
+        window.clearInterval(pollId);
+      }
+    };
+  }, [revealed, router]);
 
   const sortedTeams = [...teams].sort((a, b) => a.rank - b.rank);
 
   return (
     <div className="pt-2">
-      <AnimatePresence mode="wait">
-        {!resultsOut ? (
+      <AnimatePresence mode="wait" initial={false}>
+        {!revealed ? (
           <motion.div
             key="countdown"
             initial={{ opacity: 0, y: 8 }}
@@ -39,11 +109,13 @@ export default function ResultsAnnouncement({
             transition={{ duration: 0.35 }}
           >
             <p className="text-[#A3A3A3] text-sm mb-3">
-              Results will be announced at 10:00 PM Nepal time.
+              Results will be announced on{" "}
+              {formatAnnouncementLabel(resolvedDate)}.
             </p>
             <CountdownTimer
               title="Results Announced In"
-              isoDate={announcementDate}
+              isoDate={resolvedDate}
+              timeLeft={timeLeft}
             />
           </motion.div>
         ) : (
@@ -64,7 +136,9 @@ export default function ResultsAnnouncement({
               Top 10 teams selected for further processing
             </p>
 
-            {sortedTeams.length > 0 ? (
+            {loadingTeams && sortedTeams.length === 0 ? (
+              <p className="text-sm text-[#A3A3A3]">Loading results…</p>
+            ) : sortedTeams.length > 0 ? (
               <ol className="flex flex-col gap-2">
                 {sortedTeams.map((team, index) => (
                   <motion.li

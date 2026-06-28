@@ -131,7 +131,7 @@ async function fetchSettings(sql: ReturnType<typeof getSql>): Promise<SiteSettin
     (rows as { key: string; value: string }[]).map((r) => [r.key, r.value])
   );
 
-  return parseSiteSettings(map);
+  return { ...defaults, ...parseSiteSettings(map) };
 }
 
 export async function getSiteContent(): Promise<SiteContent> {
