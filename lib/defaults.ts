@@ -76,5 +76,6 @@ export function getDefaultSiteContent(): SiteContent {
       open: true,
       teamCount: 0,
     },
+    resultsTeams: [],
   };
 }

@@ -34,6 +34,13 @@ export type Faq = {
   sortOrder: number;
 };
 
+export type ResultsTeam = {
+  id: number;
+  rank: number;
+  teamName: string;
+  college: string | null;
+};
+
 export type SiteSettings = {
   hackathonDate: string;
   scheduleDateLabel: string;
@@ -71,6 +78,7 @@ export type SiteContent = {
   settings: SiteSettings;
   registrationThemes: string[];
   registration: RegistrationAvailability;
+  resultsTeams: ResultsTeam[];
 };
 
 export type RegistrationRow = {

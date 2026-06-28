@@ -62,6 +62,14 @@ CREATE TABLE IF NOT EXISTS site_settings (
   value TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS results_teams (
+  id SERIAL PRIMARY KEY,
+  rank INTEGER NOT NULL UNIQUE CHECK (rank >= 1 AND rank <= 10),
+  team_name TEXT NOT NULL,
+  college TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- Rate limiting for registration and admin login (run once in Neon)
 CREATE TABLE IF NOT EXISTS security_events (
   id SERIAL PRIMARY KEY,

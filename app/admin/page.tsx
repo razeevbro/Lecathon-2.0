@@ -43,6 +43,7 @@ export default function AdminOverviewPage() {
 
   const links = [
     { href: "/admin/registrations", label: "Registrations", count: stats?.registrations },
+    { href: "/admin/results", label: "Top 10 Results" },
     { href: "/admin/sponsors", label: "Sponsors", count: stats?.sponsors },
     { href: "/admin/themes", label: "Problem themes", count: stats?.themes },
     { href: "/admin/schedule", label: "Schedule items", count: stats?.scheduleItems },

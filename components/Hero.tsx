@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, FileText, Monitor, Cpu, Globe, Zap } from "lucide-react";
-import type { RegistrationAvailability } from "@/lib/types/site";
+import { RESULTS_ANNOUNCEMENT_DATE } from "@/app/constants";
+import type { RegistrationAvailability, ResultsTeam } from "@/lib/types/site";
 import RegistrationModal from "./RegistrationModal";
 import RegisterButton from "./RegisterButton";
 import CountdownTimer from "./Countdown";
+import ResultsAnnouncement from "./ResultsAnnouncement";
 
 export default function Hero({
   registrationThemes,
@@ -15,6 +17,7 @@ export default function Hero({
   prizePool,
   registrationDeadline,
   registration,
+  resultsTeams = [],
 }: {
   registrationThemes: string[];
   participantsLabel: string;
@@ -22,12 +25,14 @@ export default function Hero({
   prizePool: string;
   registrationDeadline: string;
   registration: RegistrationAvailability;
+  resultsTeams?: ResultsTeam[];
 }) {
   const [regOpen, setRegOpen] = useState(false);
   const showRegistrationCountdown =
     registration.open &&
     registrationDeadline &&
     !Number.isNaN(new Date(registrationDeadline).getTime());
+  const showResultsSection = !registration.open;
 
   return (
     <>
@@ -126,6 +131,13 @@ export default function Hero({
                   View Open Theme
                 </motion.a>
               </div>
+
+              {showResultsSection ? (
+                <ResultsAnnouncement
+                  announcementDate={RESULTS_ANNOUNCEMENT_DATE}
+                  teams={resultsTeams}
+                />
+              ) : null}
 
               {/* Stats */}
               <div className="flex gap-8 pt-4 border-t border-white/5">

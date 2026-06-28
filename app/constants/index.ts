@@ -147,3 +147,6 @@ export const faqs = [
 
 // Hackathon target date - set to a future date
 export const HACKATHON_DATE = new Date("2026-06-26T09:00:00");
+
+/** Top 10 results announcement — 10:00 PM Nepal time */
+export const RESULTS_ANNOUNCEMENT_DATE = "2026-06-28T22:00:00+05:45";

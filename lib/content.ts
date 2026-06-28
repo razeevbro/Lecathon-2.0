@@ -10,6 +10,7 @@ import { normalizeSponsorTier, sponsorTierSortIndex } from "@/lib/sponsor-tiers"
 import type {
   Faq,
   ProblemTheme,
+  ResultsTeam,
   ScheduleItem,
   SiteContent,
   SiteSettings,
@@ -49,6 +50,22 @@ type ScheduleRow = {
   description: string;
   sort_order: number;
 };
+
+type ResultsTeamRow = {
+  id: number;
+  rank: number;
+  team_name: string;
+  college: string | null;
+};
+
+function mapResultsTeam(row: ResultsTeamRow): ResultsTeam {
+  return {
+    id: row.id,
+    rank: row.rank,
+    teamName: row.team_name,
+    college: row.college,
+  };
+}
 
 function mapSponsor(row: SponsorRow): Sponsor {
   return {
@@ -136,6 +153,15 @@ export async function getSiteContent(): Promise<SiteContent> {
         countRegistrations(),
       ]);
 
+    let resultsTeams: ResultsTeam[] = [];
+    try {
+      const resultsRows =
+        await sql`SELECT * FROM results_teams ORDER BY rank ASC, id ASC`;
+      resultsTeams = (resultsRows as ResultsTeamRow[]).map(mapResultsTeam);
+    } catch (resultsError) {
+      console.warn("[getSiteContent] results_teams unavailable:", resultsError);
+    }
+
     const sponsors = sortSponsors((sponsorRows as SponsorRow[]).map(mapSponsor));
     const problemThemes = (themeRows as ThemeRow[]).map(mapTheme);
     const faqs = (faqRows as FaqRow[]).map(mapFaq);
@@ -169,6 +195,7 @@ export async function getSiteContent(): Promise<SiteContent> {
         ...isRegistrationOpenBySettings(settings, teamCount),
         teamCount,
       },
+      resultsTeams,
     };
   } catch (error) {
     console.error("[getSiteContent] Database fetch failed:", error);

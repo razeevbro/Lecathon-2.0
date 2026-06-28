@@ -15,11 +15,13 @@ import {
   ExternalLink,
   Menu,
   X,
+  Trophy,
 } from "lucide-react";
 
 const nav = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/registrations", label: "Registrations", icon: Users },
+  { href: "/admin/results", label: "Top 10 Results", icon: Trophy },
   { href: "/admin/sponsors", label: "Sponsors", icon: Building2 },
   { href: "/admin/themes", label: "Problem Themes", icon: Layers },
   { href: "/admin/schedule", label: "Schedule", icon: Calendar },
